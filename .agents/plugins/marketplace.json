@@ -1,0 +1,20 @@
+{
+  "name": "minidroid-marketplace",
+  "interface": {
+    "displayName": "MiniDroid"
+  },
+  "plugins": [
+    {
+      "name": "minidroid",
+      "source": {
+        "source": "local",
+        "path": "./plugins/minidroid"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

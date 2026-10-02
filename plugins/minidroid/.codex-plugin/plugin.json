@@ -1,0 +1,28 @@
+{
+  "name": "minidroid",
+  "version": "1.0.2",
+  "description": "MiniDroid engineering skill for analyzing, testing, debugging and extending the bundled portable Android compatibility runtime for Linux x86_64.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "MiniDroid",
+    "shortDescription": "Build and debug MiniDroid",
+    "longDescription": "Engineering skill for the bundled MiniDroid Linux x86_64 runtime, its Android Manager, package/process/storage bridges, ADB, add-ons and compatibility packs.",
+    "developerName": "Tarek Wasfy",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Code"
+    ],
+    "websiteURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux",
+    "supportURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/issues",
+    "privacyPolicyURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/blob/main/privacy.html",
+    "termsOfServiceURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/blob/main/LICENSE",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png",
+    "defaultPrompt": [
+      "Inspect the bundled MiniDroid runtime and report its current state.",
+      "Debug this MiniDroid APK launch failure without regressing the core.",
+      "Improve MiniDroid and run the relevant regression tests."
+    ]
+  }
+}
