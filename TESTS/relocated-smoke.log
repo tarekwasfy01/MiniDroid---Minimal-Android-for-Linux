@@ -1,0 +1,12 @@
+Warning: com_android_art namespace not found - NATIVELOADER_DEFAULT_NAMESPACE_LIBS ignored
+java.lang.IllegalArgumentException: Missing arguments
+
+usage: abx2xml [-i] input [output]
+usage: xml2abx [-i] input [output]
+
+Converts between human-readable XML and Android Binary XML.
+
+When invoked with the '-i' argument, the output of a successful conversion
+will overwrite the original input file. Input can be '-' to use stdin, and
+output can be '-' to use stdout.
+

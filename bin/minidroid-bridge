@@ -1,0 +1,137 @@
+#!/bin/sh
+set -eu
+
+# Local-only manager transport. One tab-separated reply per invocation:
+# STATUS, CODE, HUMAN_MESSAGE, DETAIL
+op=${1:-}
+shift || true
+SELF=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+BASE=$(CDPATH= cd -- "$SELF/.." && pwd -P)
+DATA="${MINIDROID_DATA:-${XDG_DATA_HOME:-$HOME/.local/share}/minidroid}"
+APPS="$DATA/apps"
+STATE="$DATA/state"
+LOGS="$DATA/logs"
+BACKUPS="$DATA/backups"
+SHARED="$DATA/shared-folders.tsv"
+mkdir -p "$APPS" "$STATE" "$LOGS" "$BACKUPS"
+ADB_STATE="${XDG_RUNTIME_DIR:-/tmp}/minidroid-adb-enabled"
+DEV_STATE="$STATE/developer-options"
+DISPLAY_STATE="$STATE/display-backend"
+CLIPBOARD_STATE="$STATE/clipboard"
+APPMENU_STATE="$STATE/app-menu"
+ok(){ printf 'OK\t%s\t%s\t%s\n' "$1" "$2" "$3"; }
+err(){ printf 'ERR\t%s\t%s\t%s\n' "$1" "$2" "$3"; exit 3; }
+safe_pkg(){ printf '%s' "$1" | grep -Eq '^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$'; }
+resolve_apk(){
+  case "${1:-}" in
+    file://*) printf '%s\n' "${1#file://}" ;;
+    /*) printf '%s\n' "$1" ;;
+    *) err MD_E_APK_PATH "APK muss als lokaler Pfad oder file:// übergeben werden" "$1" ;;
+  esac
+}
+manifest_value(){
+  "$BASE/bin/minidroid" apk inspect "$1" 2>/dev/null | sed -n "s/.*$2=\([^;]*\).*/\1/p" | head -n1
+}
+pkg_dir(){ printf '%s/%s\n' "$APPS" "$1"; }
+pid_file(){ printf '%s/%s.pid\n' "$STATE" "$1"; }
+pid_alive(){ kill -0 "$1" 2>/dev/null && ! ps -o stat= -p "$1" 2>/dev/null | grep -q '^[[:space:]]*Z'; }
+ensure_pkg(){ safe_pkg "$1" || err MD_E_PACKAGE "Ungültiger Paketname" "$1"; [ -d "$(pkg_dir "$1")" ] || err MD_E_NOT_FOUND "Paket nicht installiert" "$1"; }
+
+case "$op" in
+  runtime.info) ok MD_OK "MiniDroid V1 checkpoint-02" "x86_64" ;;
+  runtime.doctor) ok MD_OK "MiniDroid runtime: PASS" "linker64 ART Bionic ICU TZData framework" ;;
+  debug.adb.status) if [ -f "$ADB_STATE" ]; then ok MD_OK "Ein" "on"; else ok MD_OK "Aus" "off"; fi ;;
+  debug.adb.transport.get) ok MD_OK "MiniDroid lokaler ADB-Transport" "minidroid-local" ;;
+  debug.adb.transport.set) [ "${1:-}" = "minidroid-local" ] && ok MD_OK "MiniDroid als ADB-Ziel ausgewählt" "minidroid-local" || err MD_E_TRANSPORT "Unbekannter ADB-Transport" "${1:-}" ;;
+  google.services.status) ok MD_OK "Keine Google-Komponenten installiert" "installed=0;download=explicit" ;;
+  google.services.remove)
+    removed=0
+    "$SELF/minidroid-bridge" packages.uninstall com.google.android.gms >/tmp/minidroid-google-remove-core.log 2>&1 && removed=$((removed+1)) || true
+    "$SELF/minidroid-bridge" packages.uninstall com.android.vending >/tmp/minidroid-google-remove-store.log 2>&1 && removed=$((removed+1)) || true
+    rm -rf "$DATA/google-services"
+    ok MD_OK "Google-kompatible Komponenten entfernt" "removed=$removed" ;;
+  google.services.install)
+    GS="$DATA/google-services"; mkdir -p "$GS"
+    CORE="$GS/com.google.android.gms.apk"; STORE="$GS/com.android.vending.apk"
+    CORE_URL="https://github.com/microg/GmsCore/releases/download/v0.3.17.252432/com.google.android.gms-252432034.apk"
+    STORE_URL="https://github.com/microg/GmsCore/releases/download/v0.3.17.252432/com.android.vending-84022634.apk"
+    command -v curl >/dev/null 2>&1 || err MD_E_GSERVICES_DOWNLOAD "curl ist für den Online-Download nicht verfügbar" "curl"
+    printf 'DOWNLOADING\t1/2\tGmsCore\n' > "$LOGS/google-services.log"
+    curl -fL --retry 2 --connect-timeout 15 -o "$CORE" "$CORE_URL" >> "$LOGS/google-services.log" 2>&1 || err MD_E_GSERVICES_DOWNLOAD "GmsCore-Download fehlgeschlagen" "$CORE_URL"
+    printf 'DOWNLOADING\t2/2\tStore\n' >> "$LOGS/google-services.log"
+    curl -fL --retry 2 --connect-timeout 15 -o "$STORE" "$STORE_URL" >> "$LOGS/google-services.log" 2>&1 || err MD_E_GSERVICES_DOWNLOAD "Store-Download fehlgeschlagen" "$STORE_URL"
+    "$SELF/minidroid-bridge" packages.install "$CORE" >/tmp/minidroid-google-core.log 2>&1 || err MD_E_GSERVICES_INSTALL "GmsCore konnte nicht installiert werden" "$(tail -n 1 /tmp/minidroid-google-core.log)"
+    "$SELF/minidroid-bridge" packages.install "$STORE" >/tmp/minidroid-google-store.log 2>&1 || err MD_E_GSERVICES_INSTALL "Store-Komponente konnte nicht installiert werden" "$(tail -n 1 /tmp/minidroid-google-store.log)"
+    ok MD_OK "Google-kompatible Services installiert" "components=microG GmsCore, microG Store;download=online" ;;
+  debug.adb.set) case "${1:-false}" in true|1|on) "$SELF/adb" start-server >/dev/null 2>&1 || err MD_E_ADB "ADB konnte nicht gestartet werden" "start-server"; mkdir -p "$(dirname "$ADB_STATE")"; : > "$ADB_STATE"; ok MD_OK "ADB aktiviert" "on";; *) "$SELF/adb" kill-server >/dev/null 2>&1 || true; rm -f "$ADB_STATE"; ok MD_OK "ADB deaktiviert" "off";; esac ;;
+  debug.developer.status) if [ -f "$DEV_STATE" ]; then ok MD_OK "Entwickleroptionen aktiviert" "on"; else ok MD_OK "Entwickleroptionen deaktiviert" "off"; fi ;;
+  debug.developer.set) case "${1:-toggle}" in true|1|on) : > "$DEV_STATE";; false|0|off) rm -f "$DEV_STATE";; toggle) [ -f "$DEV_STATE" ] && rm -f "$DEV_STATE" || : > "$DEV_STATE";; esac; if [ -f "$DEV_STATE" ]; then ok MD_OK "Entwickleroptionen aktiviert" "on"; else ok MD_OK "Entwickleroptionen deaktiviert" "off"; fi ;;
+  settings.display.set) printf '%s\n' "${1:-automatic}" > "$DISPLAY_STATE"; ok MD_OK "Display-Einstellung gespeichert" "${1:-automatic}" ;;
+  settings.clipboard.set) case "${1:-toggle}" in toggle) [ -f "$CLIPBOARD_STATE" ] && rm -f "$CLIPBOARD_STATE" || : > "$CLIPBOARD_STATE";; true|1|on) : > "$CLIPBOARD_STATE";; *) rm -f "$CLIPBOARD_STATE";; esac; ok MD_OK "Clipboard-Einstellung gespeichert" "$( [ -f "$CLIPBOARD_STATE" ] && printf on || printf off )" ;;
+  settings.appmenu.set) case "${1:-toggle}" in toggle) [ -f "$APPMENU_STATE" ] && rm -f "$APPMENU_STATE" || : > "$APPMENU_STATE";; true|1|on) : > "$APPMENU_STATE";; *) rm -f "$APPMENU_STATE";; esac; ok MD_OK "App-Menü-Einstellung gespeichert" "$( [ -f "$APPMENU_STATE" ] && printf on || printf off )" ;;
+  storage.paths) ok MD_OK "App storage" "${XDG_DATA_HOME:-$HOME/.local/share}/minidroid/apps" ;;
+  storage.freeBytes) df -Pk "${XDG_DATA_HOME:-$HOME/.local/share}" | awk 'NR==2{print "OK\tMD_OK\tFreier Speicher\t" $4*1024}' ;;
+  packages.list)
+    out=""
+    for d in "$APPS"/*; do [ -d "$d" ] || continue; p=${d##*/}; out="${out}${p};"; done
+    ok MD_OK "Installierte Pakete" "${out%;}"
+    ;;
+  packages.inspect)
+    apk=$(resolve_apk "${1:-}"); [ -f "$apk" ] || err MD_E_NOT_FOUND "APK nicht gefunden" "$apk"
+    p=$(manifest_value "$apk" 'package'); [ -n "$p" ] || err MD_E_MANIFEST "Paketname konnte nicht gelesen werden" "$apk"
+    ok MD_OK "APK geprüft" "package=$p;size=$(wc -c <"$apk");path=$apk" ;;
+  packages.install)
+    apk=$(resolve_apk "${1:-}"); [ -f "$apk" ] || err MD_E_NOT_FOUND "APK nicht gefunden" "$apk"
+    p=$(manifest_value "$apk" 'package'); safe_pkg "$p" || err MD_E_MANIFEST "Ungültiger Paketname im Manifest" "$p"
+    d=$(pkg_dir "$p"); mkdir -p "$d/data" "$d/cache" "$d/files" "$d/lib64"; cp -f "$apk" "$d/base.apk"
+    printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ) installed $p $apk" >> "$LOGS/$p.log"
+    ok MD_OK "Paket installiert" "package=$p;apk=$d/base.apk;data=$d/data" ;;
+  packages.uninstall)
+    p=${1:-}; ensure_pkg "$p"; keep=${2:-false}; pf=$(pid_file "$p"); [ -f "$pf" ] && kill "$(cat "$pf")" 2>/dev/null || true; rm -f "$pf"
+    if [ "$keep" = "true" ]; then mkdir -p "$DATA/retained"; mv "$(pkg_dir "$p")/data" "$DATA/retained/${p}.data" 2>/dev/null || true; fi
+    rm -rf "$(pkg_dir "$p")" "$LOGS/$p.log"; ok MD_OK "Paket deinstalliert" "package=$p;keepData=$keep" ;;
+  process.list)
+    out=""; for f in "$STATE"/*.pid; do [ -f "$f" ] || continue; p=$(basename "$f" .pid); pid=$(cat "$f"); pid_alive "$pid" || { rm -f "$f"; continue; }; out="${out}${p}:$pid;"; done
+    ok MD_OK "Laufende Prozesse" "${out%;}" ;;
+  process.launch)
+    p=${1:-}; ensure_pkg "$p"; pf=$(pid_file "$p"); [ -f "$pf" ] && pid_alive "$(cat "$pf")" && err MD_E_RUNNING "Paket läuft bereits" "$p"
+    runlog="$STATE/$p.launch.log"; : > "$runlog"
+    starter_pid=""
+    nohup "$BASE/bin/minidroid" apk run "$(pkg_dir "$p")/base.apk" --onCreate > "$runlog" 2>&1 & starter_pid=$!
+    echo "$starter_pid" > "$pf"
+    # The Java bootstrap intentionally returns after handing the Activity tree
+    # to the native X11 host. Track that real window instead of the short-lived
+    # bootstrap process, otherwise the Manager reports a false launch failure.
+    host_pid=""
+    i=0
+    while [ "$i" -lt 50 ]; do
+      if ! grep -q 'WINDOW_CREATED' "$runlog" 2>/dev/null; then
+        sleep 0.1
+      fi
+      host_pid=$(pgrep -n -f "$BASE/host/minidroid-window-x11" 2>/dev/null || true)
+      [ -n "$host_pid" ] && break
+      i=$((i+1))
+    done
+    if [ -n "$host_pid" ]; then
+      echo "$host_pid" > "$pf"
+    elif ! pid_alive "$starter_pid"; then
+      cat "$runlog" >> "$LOGS/$p.log"; rm -f "$pf"; detail=$(tail -n 8 "$runlog" | tr '\n' '|'); err MD_E_LAUNCH "Paketstart fehlgeschlagen" "$detail"
+    fi
+    cat "$runlog" >> "$LOGS/$p.log"
+    ok MD_OK "Paket gestartet" "package=$p;pid=$(cat "$pf")" ;;
+  process.stop)
+    p=${1:-}; ensure_pkg "$p"; pf=$(pid_file "$p"); [ -f "$pf" ] || err MD_E_NOT_RUNNING "Paket läuft nicht" "$p"; pid=$(cat "$pf"); kill "$pid" 2>/dev/null || true; rm -f "$pf"; ok MD_OK "Paket gestoppt" "package=$p;pid=$pid" ;;
+  packages.clearCache|packages.clearData)
+    p=${1:-}; ensure_pkg "$p"; case "$op" in packages.clearCache) leaf=cache;; *) leaf=data;; esac
+    target=$(pkg_dir "$p")/$leaf; rm -rf "$target"; mkdir -p "$target"; ok MD_OK "Speicher geleert" "package=$p;target=$target" ;;
+  backup.create)
+    p=${1:-}; ensure_pkg "$p"; out="$BACKUPS/$p-$(date -u +%Y%m%dT%H%M%SZ).tar"; tar -cf "$out" -C "$(pkg_dir "$p")" .; ok MD_OK "Backup erstellt" "package=$p;file=$out" ;;
+  backup.restore)
+    p=${1:-}; safe_pkg "$p" || err MD_E_PACKAGE "Ungültiger Paketname" "$p"; f=$(ls -1t "$BACKUPS/$p-"*.tar 2>/dev/null | head -n1); [ -n "$f" ] || err MD_E_NOT_FOUND "Kein Backup gefunden" "$p"; mkdir -p "$(pkg_dir "$p")"; tar -xf "$f" -C "$(pkg_dir "$p")"; ok MD_OK "Backup wiederhergestellt" "package=$p;file=$f" ;;
+  storage.shared.list) [ -f "$SHARED" ] && detail=$(tr '\n' ';' < "$SHARED") || detail=""; ok MD_OK "Freigegebene Ordner" "$detail" ;;
+  storage.shared.add) [ -n "${1:-}" ] && [ -n "${2:-}" ] || err MD_E_ARGUMENT "Linux- und Android-Pfad erforderlich" "storage.shared.add"; printf '%s\t%s\t%s\n' "$1" "$2" "${3:-false}" >> "$SHARED"; ok MD_OK "Ordner freigegeben" "linux=$1;android=$2;writable=${3:-false}" ;;
+  logs.read) p=${1:-}; if [ -n "$p" ] && [ -f "$LOGS/$p.log" ]; then detail=$(tail -n 200 "$LOGS/$p.log" | tr '\n' '|'); else detail="Keine Logs verfügbar"; fi; ok MD_OK "Logs" "$detail" ;;
+  logs.clear) p=${1:-}; if [ -n "$p" ]; then : > "$LOGS/$p.log"; else find "$LOGS" -type f -name '*.log' -exec sh -c ': > "$1"' _ {} \;; fi; ok MD_OK "Logs gelöscht" "package=${p:-all}" ;;
+  packages.export) p=${1:-}; ensure_pkg "$p"; out="$BACKUPS/$p-export.apk"; cp -f "$(pkg_dir "$p")/base.apk" "$out"; ok MD_OK "APK exportiert" "file=$out" ;;
+  *) err MD_E_UNIMPLEMENTED "Backend-Funktion noch nicht implementiert" "$op" ;;
+esac

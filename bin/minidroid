@@ -1,0 +1,193 @@
+#!/bin/sh
+set -eu
+
+# The launcher is relocatable: no /mnt/data, repository, or distro path is
+# embedded in the runtime. All paths are derived from this script.
+SELF=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+BASE=$(CDPATH= cd -- "$SELF/.." && pwd -P)
+R="$BASE/rootfs"
+TMP_ROOT=${TMPDIR:-/tmp}
+TMP="$TMP_ROOT/minidroid-$(id -u)"
+mkdir -p "$TMP"
+
+CFG="$TMP/ld.config.txt"
+sed "s#/mnt/data/minidroid-portable-test#$R#g" "$R/etc/ld.config.txt" > "$CFG"
+export LD_CONFIG_FILE="$CFG"
+export ANDROID_ROOT="$R/system"
+export ANDROID_ART_ROOT="$R/apex/com.android.art"
+export ANDROID_I18N_ROOT="$R/apex/com.android.i18n"
+export ANDROID_TZDATA_ROOT="$R/apex/com.android.tzdata"
+export ANDROID_RUNTIME_ROOT="$R/apex/com.android.runtime"
+export ANDROID_DATA="${ANDROID_DATA:-${XDG_DATA_HOME:-$HOME/.local/share}/minidroid/data}"
+export TMPDIR="$TMP"
+export NATIVELOADER_DEFAULT_NAMESPACE_LIBS='libicu_jni.so:libjavacore.so:libopenjdk.so'
+
+BCP="$R/apex/com.android.art/javalib/core-oj.jar:$R/apex/com.android.art/javalib/core-libart.jar:$R/apex/com.android.art/javalib/okhttp.jar:$R/apex/com.android.art/javalib/bouncycastle.jar:$R/apex/com.android.art/javalib/apache-xml.jar:$R/apex/com.android.i18n/javalib/core-icu4j.jar"
+LINKER="$R/apex/com.android.runtime/bin/linker64"
+VM="$R/apex/com.android.art/bin/dalvikvm64"
+ANDROID_LIB="$R/system/lib64:$R/apex/com.android.runtime/lib64:$R/apex/com.android.runtime/lib64/bionic:$R/apex/com.android.art/lib64:$R/apex/com.android.i18n/lib64"
+ABX="$BASE/TESTS/abx.jar"
+AXML_JAR="$BASE/TESTS/axml-parser.jar"
+FRAMEWORK_JAR="$BASE/framework/framework.jar"
+FRAMEWORK_RES="$BASE/framework/framework-res.apk"
+FRAMEWORK_PATCH="$BASE/framework/minidroid-framework-patch.jar"
+BOOTCP="$BCP:$FRAMEWORK_PATCH:$FRAMEWORK_JAR"
+export BOOTCLASSPATH="$BOOTCP"
+
+usage() {
+  cat <<'EOF'
+MiniDroid V1
+usage: minidroid version
+       minidroid doctor
+       minidroid smoke
+       minidroid dex <jar-or-dex> <main-class> [args...]
+       minidroid jar <jar> <main-class> [args...]
+       minidroid apk inspect <apk>
+       minidroid apk run <apk> [--headless|--onCreate] [args...]
+       minidroid apk run <apk> <dex-main-class> [args...]
+       minidroid elf <android-elf> [args...]
+       minidroid adb [adb-args...]
+EOF
+}
+
+runtime_doctor() {
+  fail=0
+  check() { if [ -e "$2" ]; then echo "$1: OK"; else echo "$1: MISSING ($2)"; fail=1; fi; }
+  echo "MiniDroid runtime: $BASE"
+  check "Architecture" "$R/apex/com.android.runtime/bin/linker64"
+  check "linker64" "$LINKER"
+  check "Bionic" "$R/apex/com.android.runtime/lib64/bionic/libc.so"
+  check "ART" "$R/apex/com.android.art/lib64/libart.so"
+  check "Framework" "$FRAMEWORK_JAR"
+  check "MiniDroid framework patch" "$FRAMEWORK_PATCH"
+  check "Framework resources" "$FRAMEWORK_RES"
+  check "ICU" "$R/apex/com.android.i18n/etc/icu/icudt78l.dat"
+  check "TZData" "$R/apex/com.android.tzdata/etc/tz/versioned/10/icu/zoneinfo64.res"
+  if [ "$fail" -eq 0 ]; then echo "Runtime checks: PASS"; return 0; fi
+  echo "Runtime checks: FAIL"; return 1
+}
+
+apk_inspect() {
+  APK=$1
+  [ -f "$APK" ] || { echo "APK not found: $APK" >&2; return 2; }
+  echo "APK: $APK"
+  echo "DEX files:"
+  unzip -Z1 "$APK" 2>/dev/null | awk '/^classes([0-9]*)?\.dex$/{print "  " $0}'
+  echo "Native libraries:"
+  unzip -Z1 "$APK" 2>/dev/null | grep -E '^lib/[^/]+/.*[.]so$' | sed 's/^/  /' || true
+  if unzip -Z1 "$APK" 2>/dev/null | grep -qx 'AndroidManifest.xml'; then
+    echo "AndroidManifest.xml: present (binary XML)"
+    MANIFEST_BIN="$TMP/$(basename "$APK").AndroidManifest.xml"
+    MANIFEST_XML="$TMP/$(basename "$APK").AndroidManifest.parsed.txt"
+    unzip -p "$APK" AndroidManifest.xml > "$MANIFEST_BIN"
+    AXML_LOG="$TMP/$(basename "$APK").axml.log"
+    if "$LINKER" "$VM" -Xbootclasspath:"$BCP" -cp "$AXML_JAR" org.minidroid.axml.AxmlDump "$MANIFEST_BIN" >"$MANIFEST_XML" 2>"$AXML_LOG" && [ -s "$MANIFEST_XML" ]; then
+      echo "Manifest fields:"
+      grep -E '^START[[:space:]]+manifest|^START[[:space:]]+uses-sdk' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Application:"
+      grep -E '^START[[:space:]]+application' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Activities:"
+      grep -E '^START[[:space:]]+activity' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Services:"
+      grep -E '^START[[:space:]]+service' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Receivers:"
+      grep -E '^START[[:space:]]+receiver' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Providers:"
+      grep -E '^START[[:space:]]+provider' "$MANIFEST_XML" | sed 's/^/  /' || true
+      echo "Permissions:"
+      grep -E '^START[[:space:]]+uses-permission' "$MANIFEST_XML" | sed 's/^/  /' || true
+      grep -E '^LAUNCHER' "$MANIFEST_XML" | sed 's/^/  /' || true
+    else
+      [ "${MINIDROID_LOG:-}" = "debug" ] && cat "$AXML_LOG" >&2 || true
+      echo "Manifest decode: FAILED" >&2
+      return 1
+    fi
+  else
+    echo "AndroidManifest.xml: missing"
+  fi
+  echo "Manifest decoder: MiniDroid AXML (no host Android SDK)"
+}
+
+apk_run() {
+  APK=$1
+  [ -f "$APK" ] || { echo "APK not found: $APK" >&2; return 2; }
+  DEX_DIR="$TMP/$(basename "$APK").dex"
+  rm -rf "$DEX_DIR"
+  mkdir -p "$DEX_DIR"
+  unzip -jo "$APK" 'classes*.dex' -d "$DEX_DIR" >/dev/null 2>&1 || { echo "APK has no classes.dex" >&2; return 2; }
+  DEX_CP=
+  for DEX in "$DEX_DIR"/classes*.dex; do
+    [ -f "$DEX" ] || continue
+    if [ -n "$DEX_CP" ]; then DEX_CP="$DEX_CP:$DEX"; else DEX_CP="$DEX"; fi
+  done
+  [ -n "$DEX_CP" ] || { echo "APK has no classes.dex" >&2; return 2; }
+  shift
+  MODE=${1:-}
+  if [ "$MODE" = "--onCreate" ] || [ "$MODE" = "--headless" ] || [ -z "$MODE" ]; then
+    [ -n "$MODE" ] && shift
+    MANIFEST_BIN="$TMP/$(basename "$APK").AndroidManifest.xml"
+    MANIFEST_XML="$TMP/$(basename "$APK").AndroidManifest.run.txt"
+    unzip -p "$APK" AndroidManifest.xml > "$MANIFEST_BIN" || { echo "APK has no AndroidManifest.xml" >&2; return 2; }
+    "$LINKER" "$VM" -Xbootclasspath:"$BCP" -cp "$AXML_JAR" org.minidroid.axml.AxmlDump "$MANIFEST_BIN" > "$MANIFEST_XML" || { echo "Manifest decode failed" >&2; return 2; }
+    PKG=$(awk -F '\t' '$1=="PACKAGE"{print $2;exit}' "$MANIFEST_XML")
+    APP=$(awk -F '\t' '$1=="APPLICATION"{print $2;exit}' "$MANIFEST_XML")
+    ACT=$(awk -F '\t' '$1=="LAUNCHER_ACTIVITY"{print $2;exit}' "$MANIFEST_XML")
+    [ -n "$PKG" ] && [ -n "$ACT" ] || { echo "APK runner: no launcher Activity in manifest" >&2; return 3; }
+    [ -n "$APP" ] || APP=android.app.Application
+    echo "APK runner: package=$PKG application=$APP launcher=$ACT" >&2
+    exec "$LINKER" "$VM" -Dminidroid.base="$BASE" -Dminidroid.apk="$APK" -Dminidroid.data="$ANDROID_DATA" -Xbootclasspath:"$BOOTCP" -cp "$DEX_CP:$BASE/TESTS/apk-bootstrap.jar" org.minidroid.bootstrap.ApkBootstrap "$PKG" "$APP" "$ACT" ${MODE:+$MODE} "$@"
+  fi
+  MAIN=$MODE
+  shift
+  exec "$LINKER" "$VM" -Xbootclasspath:"$BOOTCP" -cp "$DEX_CP" "$MAIN" "$@"
+}
+
+case "${1:-}" in
+  --help|-h|help) usage; exit 0 ;;
+  version) echo "MiniDroid V1 checkpoint-02 x86_64"; exit 0 ;;
+  doctor) runtime_doctor; exit $? ;;
+  smoke)
+    exec "$LINKER" "$VM" -Xbootclasspath:"$BCP" -cp "$BASE/TESTS/abx.jar" com.android.commands.abx.Abx
+    ;;
+  dex)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    CP=$2; MAIN=$3; shift 3
+    exec "$LINKER" "$VM" -Xbootclasspath:"$BCP" -cp "$CP" "$MAIN" "$@"
+    ;;
+  jar)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    CP=$2; MAIN=$3; shift 3
+    exec "$LINKER" "$VM" -Xbootclasspath:"$BCP" -cp "$CP" "$MAIN" "$@"
+    ;;
+  apk)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    case "$2" in
+      inspect) apk_inspect "$3" ;;
+      run) shift 2; apk_run "$@" ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    ;;
+  apk-dex)
+    [ $# -ge 3 ] || { usage >&2; exit 2; }
+    APK=$2; MAIN=$3; shift 3
+    [ -f "$APK" ] || { echo "APK not found: $APK" >&2; exit 2; }
+    DEX="$TMP/$(basename "$APK").classes.dex"
+    unzip -p "$APK" classes.dex > "$DEX"
+    exec "$LINKER" "$VM" -Xbootclasspath:"$BOOTCP" -cp "$DEX" "$MAIN" "$@"
+    ;;
+  elf)
+    [ $# -ge 2 ] || { usage >&2; exit 2; }
+    ELF=$2; shift 2
+    [ -f "$ELF" ] || { echo "ELF not found: $ELF" >&2; exit 2; }
+    export LD_LIBRARY_PATH="$ANDROID_LIB${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    exec "$LINKER" "$ELF" "$@"
+    ;;
+  adb)
+    shift
+    [ -x "$BASE/bin/adb" ] || { echo "ADB binary missing: $BASE/bin/adb" >&2; exit 2; }
+    exec "$BASE/bin/adb" "$@"
+    ;;
+  *)
+    usage
+    ;;
+esac

@@ -1,0 +1,13 @@
+dir.minidroid = /mnt/data/minidroid-portable-test/apex/com.android.art/bin
+[minidroid]
+additional.namespaces = system
+namespace.default.isolated = false
+namespace.default.visible = true
+namespace.default.search.paths = /mnt/data/minidroid-portable-test/apex/com.android.art/lib64:/mnt/data/minidroid-portable-test/apex/com.android.i18n/lib64:/mnt/data/minidroid-portable-test/apex/com.android.runtime/lib64/bionic:/mnt/data/minidroid-portable-test/apex/com.android.runtime/lib64:/mnt/data/minidroid-portable-test/system/lib64:/mnt/data/minidroid-portable-test/apex/com.android.os.statsd/lib64
+namespace.default.permitted.paths = /mnt/data/minidroid-portable-test
+namespace.system.isolated = false
+namespace.system.visible = true
+namespace.system.search.paths = /mnt/data/minidroid-portable-test/system/lib64:/mnt/data/minidroid-portable-test/apex/com.android.os.statsd/lib64
+namespace.system.links = default
+namespace.system.link.default.allow_all_shared_libs = true
+namespace.system.permitted.paths = /mnt/data/minidroid-portable-test

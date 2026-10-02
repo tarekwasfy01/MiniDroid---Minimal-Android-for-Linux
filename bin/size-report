@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+SELF=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+BASE=$(CDPATH= cd -- "$SELF/.." && pwd -P)
+DIST=${1:-$BASE/dist}
+ZIP="$DIST/minidroid-x86_64.zip"
+TARZST="$DIST/minidroid-x86_64.tar.zst"
+
+bytes_dir=$(du -sb "$BASE" | cut -f1)
+printf 'Installed size: %6.2f MiB\n' "$(awk -v n="$bytes_dir" 'BEGIN { print n/1048576 }')"
+
+if [ -f "$ZIP" ]; then
+  bytes_zip=$(stat -c '%s' "$ZIP")
+  printf 'ZIP size:       %6.2f MiB\n' "$(awk -v n="$bytes_zip" 'BEGIN { print n/1048576 }')"
+  [ "$bytes_zip" -le 104857600 ] || { echo 'Release gate: FAIL (ZIP > 100 MiB)' >&2; exit 1; }
+else
+  echo 'ZIP size:          not built'
+fi
+
+if [ -f "$TARZST" ]; then
+  bytes_tarzst=$(stat -c '%s' "$TARZST")
+  printf 'TAR.ZST size:    %6.2f MiB\n' "$(awk -v n="$bytes_tarzst" 'BEGIN { print n/1048576 }')"
+else
+  echo 'TAR.ZST size:      not built'
+fi

@@ -1,0 +1,27 @@
+Warning: com_android_art namespace not found - NATIVELOADER_DEFAULT_NAMESPACE_LIBS ignored
+10-02 15:18:07.617  6503  6503 I dalvikvm64: heap.cc:451 Using generational CollectorTypeCC GC.
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.art/javalib/core-oj.jar is in boot class path but is not in a known location
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.art/javalib/core-libart.jar is in boot class path but is not in a known location
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.art/javalib/okhttp.jar is in boot class path but is not in a known location
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.art/javalib/bouncycastle.jar is in boot class path but is not in a known location
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.art/javalib/apache-xml.jar is in boot class path but is not in a known location
+10-02 15:18:07.658  6503  6503 W dalvikvm64: hidden_api.cc:240 hiddenapi: DexFile /mnt/data/minidroid-portable-test/apex/com.android.i18n/javalib/core-icu4j.jar is in boot class path but is not in a known location
+10-02 15:18:07.659  6503  6503 D nativeloader: InitDefaultPublicLibraries for_preload=1: 
+10-02 15:18:07.663  6503  6503 D nativeloader: Load libicu_jni.so using ns nativeloader-extra-libs from NATIVELOADER_DEFAULT_NAMESPACE_LIBS match: ok
+10-02 15:18:07.663  6503  6503 D dalvikvm64: u_setTimeZoneFilesDirectory("/mnt/data/minidroid-portable-test/apex/com.android.tzdata/etc/tz/versioned/10/icu") succeeded. 
+10-02 15:18:07.664  6503  6503 D dalvikvm64: I18n APEX ICU file found: /mnt/data/minidroid-portable-test/apex/com.android.i18n/etc/icu/icudt78l.dat
+10-02 15:18:07.664  6503  6503 D nativeloader: Load libjavacore.so using ns nativeloader-extra-libs from NATIVELOADER_DEFAULT_NAMESPACE_LIBS match: ok
+10-02 15:18:07.665  6503  6503 D nativeloader: Load libopenjdk.so using ns nativeloader-extra-libs from NATIVELOADER_DEFAULT_NAMESPACE_LIBS match: ok
+10-02 15:18:07.678  6503  6503 W dalvikvm64: thread.cc:4972 Using default priority map due to SDK version
+java.lang.IllegalArgumentException: Missing arguments
+
+usage: abx2xml [-i] input [output]
+usage: xml2abx [-i] input [output]
+
+Converts between human-readable XML and Android Binary XML.
+
+When invoked with the '-i' argument, the output of a successful conversion
+will overwrite the original input file. Input can be '-' to use stdin, and
+output can be '-' to use stdout.
+
+10-02 15:18:07.688  6503  6503 I dalvikvm64: OpenjdkJvm.cc:343 System.exit called, status: 1
