@@ -7,10 +7,8 @@
     {
       "name": "minidroid",
       "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux.git",
-        "ref": "plugin",
-        "path": "."
+        "source": "local",
+        "path": "./plugins/minidroid"
       },
       "policy": {
         "installation": "AVAILABLE",
