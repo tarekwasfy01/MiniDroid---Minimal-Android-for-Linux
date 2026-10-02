@@ -1,0 +1,51 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "minidroid",
+  "version": "1.0.3",
+  "description": "MiniDroid engineering skill for analyzing, testing, debugging and extending the portable Android compatibility runtime for Linux x86_64.",
+  "author": {
+    "name": "Tarek Wasfy",
+    "email": "tarekwasfy01@gmail.com",
+    "url": "https://github.com/tarekwasfy01"
+  },
+  "homepage": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux",
+  "repository": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux",
+  "license": "MIT",
+  "keywords": [
+    "minidroid",
+    "android",
+    "linux",
+    "runtime",
+    "compatibility"
+  ],
+  "skills": "./skills/",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "MiniDroid",
+        "shortDescription": "Build and debug MiniDroid",
+        "longDescription": "Develop, inspect, test and debug MiniDroid, a portable Android compatibility runtime for Linux x86_64. Work with APK execution, Android Activity lifecycle, resources, Views, the MiniDroid Manager, ART/Bionic, package and process management, ADB, add-ons and compatibility packs while preserving the lightweight MiniDroid architecture.",
+        "developerName": "Tarek Wasfy",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Code"
+        ],
+        "websiteURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux",
+        "supportURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/issues",
+        "privacyPolicyURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/blob/main/privacy.html",
+        "termsOfServiceURL": "https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux/blob/main/LICENSE",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png",
+        "defaultPrompt": [
+          "Inspect the bundled MiniDroid runtime and report its current state.",
+          "Debug this MiniDroid APK launch failure without regressing the working runtime.",
+          "Implement the requested MiniDroid feature and run the relevant regression tests."
+        ]
+      },
+      "publication": {
+        "release_notes": "MiniDroid developer plugin with bundled runtime, official icon, public privacy policy and MiniDroid engineering skill."
+      }
+    }
+  }
+}
