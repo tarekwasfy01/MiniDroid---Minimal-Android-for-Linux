@@ -1,129 +1,823 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Privacy Policy – MiniDroid</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-:root {
-  --bg: #0b1020;
-  --panel: #11182b;
-  --text: #eef3ff;
-  --muted: #aab6d3;
-  --accent: #69a7ff;
-  --border: #25314d;
-}
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-}
-main {
-  width: min(900px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 64px 0 48px;
-}
-.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 32px;
-  box-shadow: 0 16px 40px rgba(0,0,0,.22);
-}
-h1, h2 { line-height: 1.2; }
-h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 0; }
-h2 { margin-top: 2rem; }
-p, li { color: var(--muted); }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-footer {
-  border-top: 1px solid var(--border);
-  margin-top: 48px;
-  padding: 24px 16px 32px;
-  text-align: center;
-  color: var(--muted);
-  font-size: .95rem;
-}
-footer a { margin: 0 8px; }
-.small { font-size: .9rem; }
-</style>
+  <title>Privacy Policy – MiniDroid</title>
 
+  <meta
+    name="description"
+    content="Privacy Policy for the MiniDroid plugin developed by Tarek Wasfy."
+  >
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #11182b;
+      --text: #eef3ff;
+      --muted: #aab6d3;
+      --accent: #69a7ff;
+      --border: #25314d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    article {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(24px, 5vw, 48px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.22);
+    }
+
+    h1, h2, h3 {
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+    }
+
+    h2 {
+      margin-top: 2.4rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    h3 {
+      margin-top: 1.6rem;
+    }
+
+    p, li {
+      color: var(--muted);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover,
+    a:focus {
+      text-decoration: underline;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+    }
+
+    .summary,
+    .contact {
+      padding: 18px 20px;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .summary {
+      background: rgba(105, 167, 255, 0.08);
+    }
+
+    .contact {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .small {
+      font-size: .92rem;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding: 28px 16px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    footer a {
+      margin: 0 8px;
+    }
+  </style>
 </head>
+
 <body>
+
 <main>
-  <article class="card">
-    <h1>Privacy Policy</h1>
+<article>
 
-    <h2>1. Controller</h2>
-    <p>
-      Tarek Wasfy<br>
-      Knappenberg 7<br>
-      50169 Kerpen<br>
-      Germany<br>
-      Email: <a href="mailto:tarekwasfy01@gmail.com">tarekwasfy01@gmail.com</a>
-    </p>
+<h1>Privacy Policy for MiniDroid</h1>
 
-    <h2>2. Personal data</h2>
-    <p>
-      This website does not intentionally collect personal data through contact forms,
-      user accounts, analytics, advertising trackers, or profiling technologies.
-    </p>
+<p class="small">
+  Effective date: October 3, 2026<br>
+  Last updated: October 3, 2026
+</p>
 
-    <h2>3. Server log files</h2>
-    <p>
-      Depending on the hosting provider, technical access data such as IP address,
-      date and time of access, requested file, browser type, operating system and
-      referrer information may be processed automatically for security and technical
-      operation of the website. Such processing is generally performed by the hosting
-      provider.
-    </p>
+<div class="summary">
+  <strong>Summary:</strong>
+  MiniDroid is a skills-only developer plugin for working with the
+  MiniDroid Android compatibility runtime. The current MiniDroid plugin
+  does not operate a developer-controlled remote MCP server, user-account
+  system, analytics service, advertising system, or behavioral tracking
+  service. The developer does not intentionally collect personal data
+  through normal use of the plugin itself.
+</div>
 
-    <h2>4. Cookies and analytics</h2>
-    <p>
-      This website does not use its own analytics, advertising cookies or tracking
-      technologies. If the hosting platform itself uses technically necessary cookies
-      or processes technical data, its own privacy information may also apply.
-    </p>
 
-    <h2>5. Email contact</h2>
-    <p>
-      If you contact me by email, the information you provide will be processed only
-      for handling and responding to your request.
-    </p>
+<h2>1. Developer and Data Controller</h2>
 
-    <h2>6. Third-party services</h2>
-    <p>
-      If external services, download platforms, repositories or other third-party
-      websites are linked from this website, their own privacy policies apply once
-      you leave this website.
-    </p>
+<p>
+  MiniDroid is developed and maintained by:
+</p>
 
-    <h2>7. Your rights</h2>
-    <p>
-      Subject to the applicable requirements of the GDPR, you may have rights to
-      access, rectification, erasure, restriction of processing, data portability
-      and objection. You may also lodge a complaint with a competent data protection
-      supervisory authority.
-    </p>
+<div class="contact">
+  <strong>Tarek Wasfy</strong><br>
+  Knappenberg 7<br>
+  50169 Kerpen<br>
+  Germany<br><br>
 
-    <h2>8. Changes</h2>
-    <p>
-      This privacy policy may be updated if the website, hosting environment or
-      processing activities change.
-    </p>
+  Email:
+  <a href="mailto:tarekwasfy01@gmail.com">
+    tarekwasfy01@gmail.com
+  </a><br>
 
-    <p class="small">Last updated: 2 October 2026</p>
-  </article>
+  GitHub:
+  <a href="https://github.com/tarekwasfy01">
+    https://github.com/tarekwasfy01
+  </a><br>
+
+  MiniDroid repository:
+  <a href="https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux">
+    MiniDroid – Minimal Android for Linux
+  </a>
+</div>
+
+
+<h2>2. Scope of This Privacy Policy</h2>
+
+<p>
+  This Privacy Policy describes the data practices of the MiniDroid
+  plugin and the MiniDroid developer.
+</p>
+
+<p>
+  It applies to:
+</p>
+
+<ul>
+  <li>the MiniDroid plugin distributed for ChatGPT and Codex;</li>
+  <li>the MiniDroid skills included in the plugin;</li>
+  <li>the MiniDroid project website and legal pages;</li>
+  <li>direct support communications with the MiniDroid developer.</li>
+</ul>
+
+<p>
+  It does not govern independent processing performed by OpenAI,
+  GitHub, internet service providers, operating-system providers,
+  email providers, or other third-party services.
+</p>
+
+
+<h2>3. Plugin Architecture</h2>
+
+<p>
+  The current MiniDroid plugin is a skills-only plugin.
+</p>
+
+<p>
+  It provides technical instructions, development knowledge,
+  documentation, reference material, project context, and a bundled
+  MiniDroid runtime snapshot.
+</p>
+
+<p>
+  The current version does not use a developer-operated remote MCP
+  server to receive user prompts, conversations, files, or account
+  information.
+</p>
+
+
+<h2>4. Categories of Personal Data Collected</h2>
+
+<h3>4.1 Data collected through normal plugin use</h3>
+
+<p>
+  The MiniDroid developer does not intentionally collect personal data
+  directly from users through ordinary use of the skills-only plugin.
+</p>
+
+<p>
+  In particular, the MiniDroid developer does not intentionally collect
+  or request:
+</p>
+
+<ul>
+  <li>full ChatGPT or Codex conversation histories;</li>
+  <li>raw conversation transcripts;</li>
+  <li>precise location or GPS data;</li>
+  <li>contact lists;</li>
+  <li>advertising identifiers;</li>
+  <li>browsing histories;</li>
+  <li>behavioral profiles;</li>
+  <li>unrelated account information.</li>
+</ul>
+
+
+<h3>4.2 Information voluntarily provided directly to the developer</h3>
+
+<p>
+  If you contact the MiniDroid developer directly, for example by
+  email, the following categories of information may be received:
+</p>
+
+<ul>
+  <li>your name, if you provide it;</li>
+  <li>your email address;</li>
+  <li>the content of your communication;</li>
+  <li>technical information contained in a bug report;</li>
+  <li>source-code snippets voluntarily provided by you;</li>
+  <li>log excerpts voluntarily provided by you;</li>
+  <li>screenshots voluntarily provided by you;</li>
+  <li>project files voluntarily provided by you.</li>
+</ul>
+
+<p>
+  This information is provided voluntarily and is not required for
+  ordinary installation or use of the MiniDroid plugin.
+</p>
+
+
+<h2>5. Restricted Data</h2>
+
+<p>
+  MiniDroid does not require and is not intended to collect, solicit,
+  or process the following categories of restricted information:
+</p>
+
+<ul>
+  <li>payment-card information;</li>
+  <li>protected health information (PHI);</li>
+  <li>government identification numbers;</li>
+  <li>passwords;</li>
+  <li>API keys;</li>
+  <li>authentication tokens;</li>
+  <li>MFA or one-time authentication codes;</li>
+  <li>private cryptographic keys or similar authentication secrets.</li>
+</ul>
+
+<p>
+  Please do not provide this information to the MiniDroid developer
+  through bug reports, logs, screenshots, emails, source files, or
+  other communications.
+</p>
+
+
+<h2>6. Sensitive or Special-Category Personal Data</h2>
+
+<p>
+  MiniDroid does not require sensitive or special-category personal
+  data for its stated purpose.
+</p>
+
+<p>
+  Users should not provide information concerning health, biometric
+  identity, racial or ethnic origin, political opinions, religious or
+  philosophical beliefs, trade-union membership, sexual orientation,
+  or other legally protected sensitive categories unless there is an
+  exceptional and lawful reason to do so.
+</p>
+
+
+<h2>7. Purposes of Processing</h2>
+
+<p>
+  Personal information voluntarily provided directly to the MiniDroid
+  developer may be used only for purposes reasonably related to the
+  user's request, including:
+</p>
+
+<ul>
+  <li>responding to a support request;</li>
+  <li>investigating a reported MiniDroid bug;</li>
+  <li>diagnosing a compatibility problem;</li>
+  <li>responding to a security report;</li>
+  <li>maintaining and improving MiniDroid;</li>
+  <li>responding to legal obligations where required by law;</li>
+  <li>preventing abuse or protecting the security of the project.</li>
+</ul>
+
+<p>
+  Personal information is not collected for unrelated secondary
+  purposes.
+</p>
+
+
+<h2>8. Data Minimization</h2>
+
+<p>
+  MiniDroid follows a data-minimization approach.
+</p>
+
+<p>
+  The plugin is designed to use only information that is relevant to
+  the user's specific technical request.
+</p>
+
+<p>
+  MiniDroid does not request broad personal profiles, complete
+  conversation histories, accumulated prior-turn data, or unrelated
+  personal information "just in case."
+</p>
+
+
+<h2>9. Categories of Recipients</h2>
+
+<p>
+  The MiniDroid developer does not sell personal information.
+</p>
+
+<p>
+  Personal information voluntarily sent directly to the developer may
+  be accessible to the following categories of recipients only where
+  necessary:
+</p>
+
+<ul>
+  <li>
+    email or hosting providers used to receive or store the
+    communication;
+  </li>
+
+  <li>
+    technical service providers used only where reasonably necessary
+    to investigate the user's request;
+  </li>
+
+  <li>
+    professional advisers where necessary for legal, security, or
+    compliance purposes;
+  </li>
+
+  <li>
+    public authorities where disclosure is required by applicable law.
+  </li>
+</ul>
+
+<p>
+  Personal information is not intentionally shared with advertising
+  networks, data brokers, or behavioral-marketing providers.
+</p>
+
+
+<h2>10. Data Retention</h2>
+
+<h3>10.1 Plugin usage</h3>
+
+<p>
+  The current skills-only MiniDroid plugin does not operate a
+  developer-controlled remote database containing users' plugin
+  conversations, prompts, or usage history.
+</p>
+
+
+<h3>10.2 Direct support communications</h3>
+
+<p>
+  Personal information received directly through support emails or
+  technical support communications will normally be retained for no
+  longer than <strong>12 months after the last communication</strong>.
+</p>
+
+<p>
+  Information may be deleted earlier when it is no longer required.
+</p>
+
+<p>
+  Information may be retained for longer only where reasonably
+  necessary to:
+</p>
+
+<ul>
+  <li>comply with a legal obligation;</li>
+  <li>establish, exercise, or defend legal claims;</li>
+  <li>investigate a security incident;</li>
+  <li>maintain a record of an unresolved technical or security issue.</li>
+</ul>
+
+
+<h3>10.3 Deletion requests</h3>
+
+<p>
+  Where legally applicable, a user may request deletion of personal
+  information directly controlled by the MiniDroid developer.
+</p>
+
+<p>
+  Valid deletion requests will be handled without undue delay, subject
+  to applicable legal retention requirements.
+</p>
+
+
+<h2>11. Tracking, Analytics, and Behavioral Profiling</h2>
+
+<p>
+  The MiniDroid plugin does not contain developer-operated:
+</p>
+
+<ul>
+  <li>behavioral advertising;</li>
+  <li>advertising trackers;</li>
+  <li>cross-site tracking;</li>
+  <li>cross-app tracking;</li>
+  <li>user fingerprinting;</li>
+  <li>behavioral profiling;</li>
+  <li>marketing analytics;</li>
+  <li>surveillance functionality.</li>
+</ul>
+
+<p>
+  The MiniDroid developer does not intentionally collect query
+  patterns, timestamps, IP addresses, or similar metadata for
+  profiling or advertising purposes through the plugin.
+</p>
+
+
+<h2>12. Cookies</h2>
+
+<p>
+  The MiniDroid project does not intentionally set its own analytics,
+  advertising, or behavioral-tracking cookies through its static
+  project or privacy-policy pages.
+</p>
+
+<p>
+  Third-party hosting platforms may use their own cookies or technical
+  mechanisms according to their own privacy policies.
+</p>
+
+
+<h2>13. OpenAI</h2>
+
+<p>
+  When MiniDroid is used through ChatGPT, Codex, or another OpenAI
+  product, OpenAI may process information as necessary to operate its
+  services.
+</p>
+
+<p>
+  Such processing is controlled by OpenAI and is subject to the
+  applicable OpenAI privacy documentation, terms, settings, and
+  policies.
+</p>
+
+<p>
+  The MiniDroid developer does not receive a user's full OpenAI
+  conversation history merely because the user installs or uses the
+  MiniDroid plugin.
+</p>
+
+
+<h2>14. GitHub and Other Third-Party Services</h2>
+
+<p>
+  MiniDroid may contain links to GitHub or other software-development
+  resources.
+</p>
+
+<p>
+  When a user intentionally visits or uses a third-party service, that
+  provider may process information independently according to its own
+  privacy policy.
+</p>
+
+<p>
+  For example, a web-hosting provider may process ordinary network
+  information such as IP addresses, browser information, request
+  timestamps, and requested URLs as part of operating its service.
+</p>
+
+<p>
+  Such third-party processing is not performed by the MiniDroid
+  plugin itself.
+</p>
+
+
+<h2>15. Local Files and Project Data</h2>
+
+<p>
+  MiniDroid is a developer tool intended to work with technical
+  materials such as source code, APKs, logs, runtime files, build
+  files, and configuration files.
+</p>
+
+<p>
+  Local files processed on the user's own system are not automatically
+  sent to the MiniDroid developer merely because MiniDroid accesses
+  or modifies them locally.
+</p>
+
+<p>
+  Users remain responsible for deciding which files or technical
+  information they intentionally provide to ChatGPT, Codex, GitHub,
+  the MiniDroid developer, or any other third party.
+</p>
+
+
+<h2>16. User-Provided Logs, Files, and Screenshots</h2>
+
+<p>
+  Before voluntarily sharing logs, screenshots, project archives,
+  configuration files, or source code, users should review them and
+  remove unnecessary:
+</p>
+
+<ul>
+  <li>personal information;</li>
+  <li>passwords;</li>
+  <li>API keys;</li>
+  <li>access tokens;</li>
+  <li>private keys;</li>
+  <li>authentication cookies;</li>
+  <li>other confidential information.</li>
+</ul>
+
+
+<h2>17. Optional External Downloads</h2>
+
+<p>
+  MiniDroid may support workflows involving optional software
+  components or Android compatibility resources.
+</p>
+
+<p>
+  Where the user intentionally requests an external download, the
+  external provider may receive the technical network information
+  necessary to deliver that resource.
+</p>
+
+<p>
+  MiniDroid does not intentionally send unrelated personal information
+  to such providers.
+</p>
+
+
+<h2>18. Google Components</h2>
+
+<p>
+  The MiniDroid core does not include proprietary Google applications
+  or Google services.
+</p>
+
+<p>
+  If optional Google-related components are supported, any
+  installation must be explicitly initiated by the user and use an
+  appropriate and lawful source.
+</p>
+
+<p>
+  Google or another external provider may independently process data
+  when its services are intentionally used. Such processing is
+  governed by that provider's own privacy policies.
+</p>
+
+
+<h2>19. Security</h2>
+
+<p>
+  Reasonable technical and organizational measures are used to protect
+  personal information directly controlled by the MiniDroid developer
+  against unauthorized access, disclosure, alteration, or misuse.
+</p>
+
+<p>
+  Users should nevertheless avoid sending credentials or other
+  sensitive information unless absolutely necessary.
+</p>
+
+<p>
+  No internet transmission or electronic storage system can be
+  guaranteed to be completely secure.
+</p>
+
+
+<h2>20. User Controls and Rights</h2>
+
+<p>
+  Depending on applicable law, users may have the right to request:
+</p>
+
+<ul>
+  <li>access to personal information held about them;</li>
+  <li>correction of inaccurate information;</li>
+  <li>deletion of personal information;</li>
+  <li>restriction of processing;</li>
+  <li>objection to certain processing;</li>
+  <li>data portability where applicable;</li>
+  <li>withdrawal of consent where processing is based on consent.</li>
+</ul>
+
+<p>
+  Requests concerning information directly controlled by the
+  MiniDroid developer can be sent to:
+</p>
+
+<p>
+  <a href="mailto:tarekwasfy01@gmail.com">
+    tarekwasfy01@gmail.com
+  </a>
+</p>
+
+
+<h2>21. GDPR Legal Bases</h2>
+
+<p>
+  Where the General Data Protection Regulation applies, personal data
+  voluntarily provided directly to the MiniDroid developer may be
+  processed on one or more of the following legal bases:
+</p>
+
+<ul>
+  <li>
+    <strong>Article 6(1)(b) GDPR</strong> – where processing is
+    necessary to respond to a user's request or provide requested
+    support;
+  </li>
+
+  <li>
+    <strong>Article 6(1)(f) GDPR</strong> – legitimate interests in
+    maintaining MiniDroid, responding to security issues, preventing
+    abuse, and operating the project;
+  </li>
+
+  <li>
+    <strong>Article 6(1)(c) GDPR</strong> – compliance with a legal
+    obligation;
+  </li>
+
+  <li>
+    <strong>Article 6(1)(a) GDPR</strong> – consent, where legally
+    appropriate and specifically obtained.
+  </li>
+</ul>
+
+
+<h2>22. International Processing</h2>
+
+<p>
+  OpenAI, GitHub, email providers, hosting providers, and other
+  third-party services may operate internationally.
+</p>
+
+<p>
+  Any international processing performed independently by those
+  providers is governed by their respective privacy policies and legal
+  arrangements.
+</p>
+
+<p>
+  The current MiniDroid skills-only plugin does not operate its own
+  remote user-data server for transferring plugin conversations to the
+  developer.
+</p>
+
+
+<h2>23. Children's Privacy</h2>
+
+<p>
+  MiniDroid is a general-purpose software development project.
+</p>
+
+<p>
+  It is not specifically directed to children under 13 and does not
+  intentionally create advertising or behavioral profiles of children.
+</p>
+
+
+<h2>24. Sale of Personal Information</h2>
+
+<p>
+  The MiniDroid developer does not sell users' personal information.
+</p>
+
+<p>
+  Personal information is not exchanged for payment with advertising
+  networks, data brokers, or similar third parties.
+</p>
+
+
+<h2>25. Changes to This Privacy Policy</h2>
+
+<p>
+  This Privacy Policy may be updated if MiniDroid's functionality,
+  plugin architecture, third-party integrations, legal requirements,
+  or data practices change.
+</p>
+
+<p>
+  In particular, this policy will be reviewed before introducing
+  functionality such as:
+</p>
+
+<ul>
+  <li>a developer-operated remote MCP server;</li>
+  <li>user accounts;</li>
+  <li>remote cloud storage;</li>
+  <li>developer-operated telemetry;</li>
+  <li>analytics;</li>
+  <li>new categories of personal data processing.</li>
+</ul>
+
+<p>
+  The current version of the policy will remain available at the
+  privacy-policy URL associated with the MiniDroid plugin.
+</p>
+
+
+<h2>26. Contact for Privacy Requests</h2>
+
+<div class="contact">
+  <strong>Tarek Wasfy</strong><br>
+  Knappenberg 7<br>
+  50169 Kerpen<br>
+  Germany<br><br>
+
+  Email:
+  <a href="mailto:tarekwasfy01@gmail.com">
+    tarekwasfy01@gmail.com
+  </a>
+</div>
+
+
+<h2>27. Supervisory Authority</h2>
+
+<p>
+  Where the GDPR applies, users may have the right to lodge a
+  complaint with a competent data-protection supervisory authority,
+  including an authority in the EU Member State of their habitual
+  residence, place of work, or place of an alleged infringement.
+</p>
+
+
+<h2>28. Independence from OpenAI</h2>
+
+<p>
+  MiniDroid is an independent project developed by Tarek Wasfy.
+</p>
+
+<p>
+  MiniDroid is not OpenAI and is not operated by OpenAI.
+  Availability through ChatGPT, Codex, or the OpenAI plugin directory
+  does not imply that MiniDroid is developed or endorsed by OpenAI.
+</p>
+
+
+<h2>29. Summary of Data Practices</h2>
+
+<ul>
+  <li>No developer-operated behavioral advertising.</li>
+  <li>No developer-operated tracking or profiling.</li>
+  <li>No sale of personal information.</li>
+  <li>No developer-operated analytics in the current plugin.</li>
+  <li>No developer-operated remote MCP server in the current version.</li>
+  <li>No intentional collection of complete ChatGPT conversation histories.</li>
+  <li>No request for passwords, API keys, MFA codes, or payment-card data.</li>
+  <li>Only task-relevant information should be used.</li>
+  <li>Direct support information is normally retained for no more than 12 months.</li>
+  <li>Users may request access, correction, or deletion where applicable.</li>
+</ul>
+
+</article>
 </main>
 
+
 <footer>
-  <div>&copy; 2026 Tarek Wasfy</div>
+  <div>&copy; 2026 Tarek Wasfy – MiniDroid</div>
+
   <div>
-    <a href="privacy.html">Privacy</a>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy Policy</a>
     <a href="impressum.html">Impressum</a>
   </div>
 </footer>
