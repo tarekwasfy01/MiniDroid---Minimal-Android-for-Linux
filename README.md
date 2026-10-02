@@ -1,5 +1,9 @@
 # MiniDroid V1 portable checkpoint
 
+<a href="https://snapcraft.io/minidroid">
+    <img alt="Get it from the Snap Store" src=https://snapcraft.io/en/dark/install.svg />
+  </a>
+
 This checkpoint is a relocatable headless Android x86_64 runtime. The hard
 release limit applies to the compressed archive only: the official ZIP must
 remain at or below 100 MiB. Installed size is reported separately.
