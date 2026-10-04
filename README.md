@@ -46,3 +46,21 @@ process lists, guarded process start/stop, per-package data/cache directories,
 shared-folder records, logs, backup/restore, APK export, ADB server control and
 the explicit Google-components policy. A failed Activity process is reported
 as `MD_E_LAUNCH`, not as a running app.
+
+## Chat GPT Marketplace installation
+
+This repository contains a Codex marketplace at `.agents/plugins/marketplace.json`.
+The marketplace entry points to the installable plugin at `./plugins/minidroid`.
+
+Add the `plugin` branch as a marketplace:
+
+```powershell
+codex plugin marketplace add https://github.com/tarekwasfy01/MiniDroid---Minimal-Android-for-Linux.git --ref plugin
+```
+
+Then open the Plugins Directory, select `minidroid-marketplace`, and install
+`MiniDroid`. After repository updates, refresh the marketplace:
+
+```powershell
+codex plugin marketplace upgrade minidroid-marketplace
+```
